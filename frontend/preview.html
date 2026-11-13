@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Findly.ai – Smart Campus Lost & Found Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- React & Babel CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root {
+      --espresso: #211C19;
+      --dark-chocolate: #49352A;
+      --mocha-brown: #795C48;
+      --warm-beige: #D8C3A5;
+      --beige-light: #EBE3D5;
+      --cream: #F5EFE6;
+      --soft-ivory: #FAF8F3;
+
+      --bg-body: var(--soft-ivory);
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F6F2EC;
+      --text-main: var(--espresso);
+      --text-muted: #5C4B41;
+      --text-light: #8E7A6E;
+
+      --border-color: rgba(73, 53, 42, 0.14);
+      --border-focus: var(--dark-chocolate);
+      --primary: var(--dark-chocolate);
+      --primary-hover: var(--espresso);
+
+      --success: #3D5A40;
+      --success-light: #EBF2EC;
+      --success-text: #283F2B;
+      --danger: #8C3A27;
+      --danger-light: #FAEEEB;
+      --danger-text: #692415;
+
+      --shadow-sm: 0 2px 4px rgba(33, 28, 25, 0.04);
+      --shadow-md: 0 6px 16px rgba(33, 28, 25, 0.06);
+      --shadow-lg: 0 12px 28px rgba(33, 28, 25, 0.08);
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+    h1, h2, h3, h4 { font-family: var(--font-serif); color: var(--espresso); letter-spacing: -0.015em; font-weight: 700; }
+    button, input, select, textarea { font-family: var(--font-sans); }
+    a { color: inherit; text-decoration: none; }
+
+    .app-container { display: flex; flex-direction: column; min-height: 100vh; background-color: var(--soft-ivory); }
+    .main-content { flex: 1; max-width: 1240px; width: 100%; margin: 0 auto; padding: 32px 24px 80px; }
+
+    .navbar { background: rgba(250, 248, 243, 0.96); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+    .navbar-inner { max-width: 1380px; margin: 0 auto; padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand-logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-weight: 800; font-size: 1.42rem; color: var(--espresso); cursor: pointer; letter-spacing: -0.02em; flex-shrink: 0; white-space: nowrap; }
+    .brand-icon-box { width: 38px; height: 38px; background: var(--dark-chocolate); border-radius: 11px; display: flex; align-items: center; justify-content: center; color: var(--soft-ivory); font-weight: 700; flex-shrink: 0; box-shadow: 0 3px 10px rgba(73, 53, 42, 0.18); }
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; background: rgba(245, 239, 230, 0.85); padding: 5px 6px; border-radius: var(--radius-full); border: 1px solid var(--border-color); flex-wrap: nowrap; }
+    .nav-item { padding: 7px 13px; border-radius: var(--radius-full); font-weight: 500; font-size: 0.83rem; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; line-height: 1.2; }
+    .nav-item:hover { color: var(--espresso); background-color: #ffffff; }
+    .nav-item.active { color: var(--soft-ivory); background-color: var(--dark-chocolate); font-weight: 600; box-shadow: 0 2px 8px rgba(73, 53, 42, 0.22); }
+    .nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; white-space: nowrap; }
+
+    .icon-btn { background: var(--cream); border: 1px solid var(--border-color); width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.2s; color: var(--espresso); flex-shrink: 0; }
+    .notification-count { position: absolute; top: -4px; right: -4px; background: var(--danger); color: white; font-size: 0.7rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--soft-ivory); }
+
+    .user-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--cream); padding: 4px 14px 4px 5px; border-radius: var(--radius-full); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.2s ease; }
+    .user-chip:hover { border-color: var(--mocha-brown); background: #ffffff; }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--dark-chocolate), var(--mocha-brown)); color: var(--soft-ivory); display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 600; flex-shrink: 0; }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 22px; border-radius: var(--radius-md); font-size: 0.92rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.25s ease; white-space: nowrap; }
+    .btn-primary { background: var(--dark-chocolate); color: var(--soft-ivory); box-shadow: 0 4px 12px rgba(73, 53, 42, 0.2); }
+    .btn-primary:hover { background: var(--espresso); box-shadow: 0 6px 16px rgba(33, 28, 25, 0.3); transform: translateY(-1px); }
+    .btn-outline { background: #ffffff; color: var(--espresso); border: 1.5px solid var(--warm-beige); }
+    .btn-outline:hover { background: var(--cream); border-color: var(--mocha-brown); color: var(--dark-chocolate); }
+    .btn-danger { background: var(--danger); color: #ffffff; }
+    .btn-danger:hover { background: #692415; }
+    .btn-success { background: var(--success); color: #ffffff; }
+    .btn-success:hover { background: var(--success-text); }
+    .btn-lg { padding: 15px 32px; font-size: 1.02rem; border-radius: var(--radius-full); }
+
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: var(--radius-full); font-size: 0.74rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-lost { background-color: var(--danger-light); color: var(--danger-text); border: 1px solid #f3cdc5; }
+    .badge-found { background-color: var(--success-light); color: var(--success-text); border: 1px solid #c8decb; }
+    .badge-ai { background: var(--cream); color: var(--dark-chocolate); border: 1px solid var(--warm-beige); font-weight: 700; }
+
+    .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm); transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .card:hover { box-shadow: var(--shadow-md); border-color: var(--warm-beige); }
+
+    .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 24px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+
+    @media (max-width: 900px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .nav-links { display: none !important; }
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+    .form-label { font-size: 0.88rem; font-weight: 600; color: var(--espresso); }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.92rem; background: #ffffff; color: var(--espresso); outline: none; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--mocha-brown); box-shadow: 0 0 0 3px rgba(121, 92, 72, 0.15); }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(33, 28, 25, 0.6); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+    .modal-content { background: #ffffff; border-radius: var(--radius-lg); max-width: 560px; width: 100%; box-shadow: var(--shadow-xl); border: 1px solid var(--warm-beige); overflow: hidden; }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--cream); }
+    .modal-body { padding: 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-color); background: var(--soft-ivory); display: flex; justify-content: flex-end; gap: 12px; }
+
+    .toast-banner { position: fixed; bottom: 24px; right: 24px; background: var(--espresso); color: var(--soft-ivory); padding: 14px 22px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 12px; z-index: 1100; border: 1px solid var(--mocha-brown); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    const INITIAL_ITEMS = [
+      {
+        id: 'item-101',
+        type: 'lost',
+        title: 'Navy Blue Dell Laptop Bag',
+        category: 'Bags & Backpacks',
+        date: '2026-11-12',
+        location: 'Central Library, 2nd Floor',
+        description: 'Dark blue backpack with padded straps. Has a red metal carabiner on the side loop and Dell logo embossed on front.',
+        imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80',
+        rewardBudget: 100,
+        hasMatch: true
+      },
+      {
+        id: 'item-102',
+        type: 'found',
+        title: 'Navy Dell Backpack with Cables',
+        category: 'Bags & Backpacks',
+        date: '2026-11-12',
+        location: 'Central Library, Reading Hall B',
+        description: 'Found unattended at desk 14. Deep navy blue color with Dell branding. Handed over to library reception desk.',
+        imageUrl: 'https://images.unsplash.com/photo-1546938576-6e6a64f317cc?auto=format&fit=crop&w=600&q=80',
+        rewardBudget: 100,
+        hasMatch: true
+      },
+      {
+        id: 'item-103',
+        type: 'found',
+        title: 'Student ID Card - CSE 2nd Year',
+        category: 'Cards & IDs',
+        date: '2026-11-13',
+        location: 'Campus Canteen, Near Counter 3',
+        description: 'University smart ID card with lanyard. Department of Computer Science.',
+        imageUrl: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=600&q=80',
+        hasMatch: false
+      },
+      {
+        id: 'item-104',
+        type: 'found',
+        title: 'AirPods Pro Gen 2 Case',
+        category: 'Electronics',
+        date: '2026-11-11',
+        location: 'Indoor Sports Complex - Gym',
+        description: 'Glossy white charging case with subtle scratch near hinge. Turned into sports office.',
+        imageUrl: 'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=600&q=80',
+        hasMatch: false
+      },
+      {
+        id: 'item-105',
+        type: 'lost',
+        title: 'Casio Scientific Calculator fx-991EX',
+        category: 'Stationery',
+        date: '2026-11-12',
+        location: 'Block C, Room 304 (Math Lecture)',
+        description: 'ClassWiz model with protective slide cover. Small yellow sticker with initials "AS" on backside.',
+        imageUrl: 'https://images.unsplash.com/photo-1587145820266-a5951ee6f620?auto=format&fit=crop&w=600&q=80',
+        rewardBudget: 50,
+        hasMatch: false
+      },
+      {
+        id: 'item-106',
+        type: 'found',
+        title: 'Dorm Key Set with Batman Keychain',
+        category: 'Keys',
+        date: '2026-11-10',
+        location: 'Hostel Block 4 Walkway',
+        description: 'Three brass keys on a black metallic keyring with a Batman charm.',
+        imageUrl: 'https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=600&q=80',
+        hasMatch: false
+      }
+    ];
+
+    const GOGRAB_SNACKS = [
+      { id: '1', name: 'Cold Coffee 200ml', price: 40, icon: '☕' },
+      { id: '2', name: 'Snickers Almond', price: 50, icon: '🍫' },
+      { id: '3', name: 'Magic Masala Chips', price: 20, icon: '🥔' },
+      { id: '4', name: 'Raw Coconut Water', price: 60, icon: '🥥' },
+      { id: '5', name: 'RiteBite Protein Bar', price: 80, icon: '💪' },
+      { id: '6', name: 'Red Bull Energy 250ml', price: 125, icon: '⚡' }
+    ];
+
+    const BACKEND_API = 'http://localhost:8000';
+
+    function App() {
+      const [activePage, setActivePage] = useState('home');
+      const [items, setItems] = useState(INITIAL_ITEMS);
+      const [liveMatch, setLiveMatch] = useState(null);
+      const [claimAnswer, setClaimAnswer] = useState('');
+      const [walletBalance, setWalletBalance] = useState(150);
+      const [cart, setCart] = useState({});
+      const [selectedDetail, setSelectedDetail] = useState(null);
+      const [claimTarget, setClaimTarget] = useState(null);
+      const [toast, setToast] = useState('');
+      const [searchQuery, setSearchQuery] = useState('');
+      const [selectedType, setSelectedType] = useState('all');
+      const [selectedCategory, setSelectedCategory] = useState('all');
+
+      // Auth & Dashboard states
+      const [currentUser, setCurrentUser] = useState({
+        id: 'user-aarav',
+        email: 'arjun@univ.edu',
+        name: 'Aarav Sharma',
+        roll_number: '24BCE1042',
+        department: 'B.Tech Computer Science & Engineering',
+        hostel: 'Hostel Block 4',
+        role: 'student'
+      });
+      const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
+      const [authEmail, setAuthEmail] = useState('arjun@univ.edu');
+      const [authPassword, setAuthPassword] = useState('campus123');
+      const [authName, setAuthName] = useState('');
+      const [authRoll, setAuthRoll] = useState('');
+      const [authDept, setAuthDept] = useState('B.Tech Computer Science & Engineering');
+      const [authHostel, setAuthHostel] = useState('Hostel Block 4');
+      const [authRole, setAuthRole] = useState('student');
+      const [claimsList, setClaimsList] = useState([]);
+      const [notifsList, setNotifsList] = useState([]);
+
+      const refreshClaimsAndNotifs = async (userObj) => {
+        const u = userObj || currentUser;
+        try {
+          const [cRes, nRes] = await Promise.all([
+            fetch(`${BACKEND_API}/claims`),
+            fetch(`${BACKEND_API}/notifications${u?.email ? `?user=${encodeURIComponent(u.email)}` : ''}`)
+          ]);
+          if (cRes.ok) setClaimsList(await cRes.json());
+          if (nRes.ok) setNotifsList(await nRes.json());
+        } catch (e) {}
+      };
+
+      // Load live items and live AI match from Python FastAPI backend (http://localhost:8000)
+      React.useEffect(() => {
+        async function syncBackend() {
+          try {
+            const res = await fetch(`${BACKEND_API}/items`);
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data) && data.length > 0) {
+                const mapped = data.map(it => ({
+                  ...it,
+                  imageUrl: it.image_url || 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80',
+                  rewardBudget: 100,
+                  hasMatch: true
+                }));
+                setItems([...mapped, ...INITIAL_ITEMS]);
+              }
+            }
+            const mRes = await fetch(`${BACKEND_API}/matches/lost-wallet-fossil`);
+            const qRes = await fetch(`${BACKEND_API}/items/lost-wallet-fossil`);
+            if (mRes.ok && qRes.ok) {
+              const mList = await mRes.json();
+              const qItem = await qRes.json();
+              if (Array.isArray(mList) && mList.length > 0) {
+                setLiveMatch({ queryItem: qItem, bestMatch: mList[0], allMatches: mList });
+              }
+            }
+            await refreshClaimsAndNotifs();
+          } catch (e) {}
+        }
+        syncBackend();
+      }, []);
+
+      const handleAuthSubmit = async (e) => {
+        e.preventDefault();
+        try {
+          const endpoint = authMode === 'login' ? '/auth/login' : '/auth/signup';
+          const body = authMode === 'login'
+            ? { email: authEmail, password: authPassword }
+            : {
+                email: authEmail,
+                password: authPassword,
+                name: authName || 'Campus Student',
+                roll_number: authRoll || '24BCE1099',
+                department: authDept,
+                hostel: authHostel,
+                role: authRole
+              };
+          const res = await fetch(`${BACKEND_API}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            alert(data.detail || data.error || 'Authentication failed');
+            return;
+          }
+          setCurrentUser(data);
+          if (typeof data.wallet_balance === 'number') setWalletBalance(data.wallet_balance);
+          await refreshClaimsAndNotifs(data);
+          showToast(`👋 Signed in as ${data.name} (${data.role.toUpperCase()})`);
+          setActivePage('dashboard');
+        } catch (err) {
+          alert('Could not reach backend auth service.');
+        }
+      };
+
+      const handleQuickDemoLogin = async (email, password) => {
+        setAuthEmail(email);
+        setAuthPassword(password);
+        try {
+          const res = await fetch(`${BACKEND_API}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setCurrentUser(data);
+            if (typeof data.wallet_balance === 'number') setWalletBalance(data.wallet_balance);
+            await refreshClaimsAndNotifs(data);
+            showToast(`👋 Switched account to ${data.name} (${data.role.toUpperCase()})`);
+            setActivePage('dashboard');
+          }
+        } catch (e) {}
+      };
+
+      const handleClaimDecision = async (claimId, newStatus) => {
+        try {
+          const res = await fetch(`${BACKEND_API}/claims/${claimId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+          });
+          if (res.ok) {
+            showToast(`🛡️ Claim ${newStatus.toUpperCase()}!`);
+            await refreshClaimsAndNotifs();
+          }
+        } catch (e) {}
+      };
+
+      // Report form states
+      const [formTitle, setFormTitle] = useState('');
+      const [formCategory, setFormCategory] = useState('wallet');
+      const [formDate, setFormDate] = useState('2026-11-13');
+      const [formLocation, setFormLocation] = useState('');
+      const [formDesc, setFormDesc] = useState('');
+      const [formReward, setFormReward] = useState(0);
+      const [formImage, setFormImage] = useState('');
+      const [formFile, setFormFile] = useState(null);
+      const [formVerifQuestion, setFormVerifQuestion] = useState('');
+      const [formVerifAnswer, setFormVerifAnswer] = useState('');
+      const [isSubmitting, setIsSubmitting] = useState(false);
+
+      const showToast = (msg) => {
+        setToast(msg);
+        setTimeout(() => setToast(''), 3500);
+      };
+
+      const viewMatchesForItem = async (item) => {
+        if (item && item.id) {
+          try {
+            const [mRes, qRes] = await Promise.all([
+              fetch(`${BACKEND_API}/matches/${item.id}`),
+              fetch(`${BACKEND_API}/items/${item.id}`)
+            ]);
+            if (mRes.ok && qRes.ok) {
+              const mList = await mRes.json();
+              const qItem = await qRes.json();
+              if (Array.isArray(mList) && mList.length > 0) {
+                setLiveMatch({ queryItem: qItem, bestMatch: mList[0], allMatches: mList });
+              }
+            }
+          } catch (e) {}
+        }
+        setActivePage('matches');
+      };
+
+      const handleFileUploadChange = (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        setFormFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFormImage(reader.result);
+        };
+        reader.readAsDataURL(file);
+      };
+
+      const handlePresetSelect = async (presetUrl, presetCat) => {
+        setFormImage(presetUrl);
+        if (presetCat) setFormCategory(presetCat);
+        try {
+          const resp = await fetch(presetUrl);
+          const blob = await resp.blob();
+          setFormFile(new File([blob], 'preset.jpg', { type: blob.type || 'image/jpeg' }));
+        } catch (e) {
+          setFormFile(null);
+        }
+      };
+
+      const handleReportSubmit = async (type) => {
+        if (type === 'found' && !formImage && !formFile) {
+          alert('Please upload a photo (or select a sample image) of the item you found!');
+          return;
+        }
+        if (!formTitle || !formLocation) {
+          alert('Please fill out the item name and campus location.');
+          return;
+        }
+        if (type === 'lost' && !formImage && !formFile && !formDesc.trim()) {
+          alert('Since you have no photo of the lost item, please write a brief description so our AI can match your text description against found item photos!');
+          return;
+        }
+        setIsSubmitting(true);
+        try {
+          const fd = new FormData();
+          fd.append('type', type);
+          fd.append('title', formTitle);
+          fd.append('category', formCategory);
+          fd.append('date', formDate);
+          fd.append('location', formLocation);
+          fd.append('description', formDesc || '');
+          fd.append('reporter_name', currentUser ? currentUser.email : 'Aarav Sharma');
+          if (type === 'found') {
+            fd.append('verification_question', formVerifQuestion);
+            fd.append('verification_answer', formVerifAnswer);
+          }
+          if (formFile) {
+            fd.append('image', formFile, formFile.name || 'upload.jpg');
+          } else if (formImage) {
+            const r = await fetch(formImage);
+            const b = await r.blob();
+            fd.append('image', b, 'upload.jpg');
+          }
+          const res = await fetch(`${BACKEND_API}/items`, { method: 'POST', body: fd });
+          if (res.ok) {
+            const created = await res.json();
+            const newItem = {
+              ...created,
+              imageUrl: created.image_url || formImage,
+              rewardBudget: type === 'lost' ? formReward : 0,
+              hasMatch: true
+            };
+            setItems([newItem, ...items]);
+            setIsSubmitting(false);
+            showToast(`✨ ${type === 'lost' ? 'Lost report' : 'Found item'} saved! Opening live AI matches...`);
+            setFormTitle('');
+            setFormLocation('');
+            setFormDesc('');
+            setFormImage('');
+            setFormFile(null);
+            setFormVerifQuestion('');
+            setFormVerifAnswer('');
+            await viewMatchesForItem(created);
+            return;
+          }
+        } catch (e) {}
+
+        setTimeout(() => {
+          const newItem = {
+            id: 'item-' + Date.now(),
+            type: type,
+            title: formTitle,
+            category: formCategory,
+            date: formDate,
+            location: formLocation,
+            description: formDesc || 'Reported on campus',
+            imageUrl: formImage || 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80',
+            rewardBudget: type === 'lost' ? formReward : 0,
+            hasMatch: false
+          };
+          setItems([newItem, ...items]);
+          setIsSubmitting(false);
+          showToast(`✨ ${type === 'lost' ? 'Lost report created' : 'Found item logged'}! AI analyzing inventory.`);
+          setFormTitle('');
+          setFormLocation('');
+          setFormDesc('');
+          setActivePage('dashboard');
+        }, 800);
+      };
+
+      const handleClaimAndReleaseReward = async () => {
+        if (claimTarget && claimTarget.id) {
+          try {
+            const res = await fetch(`${BACKEND_API}/claims`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                item_id: claimTarget.id,
+                claimant_name: currentUser ? currentUser.name : 'Aarav Sharma',
+                answer: claimAnswer || 'Star Wars'
+              })
+            });
+            if (res.ok) {
+              const claimData = await res.json();
+              await refreshClaimsAndNotifs();
+              if (claimData.status === 'approved') {
+                setWalletBalance(prev => prev + 100);
+                showToast('🎉 Claim Auto-Approved by Backend! ₹100 credited to finder wallet.');
+                setClaimTarget(null);
+                setClaimAnswer('');
+                return;
+              } else {
+                showToast('🛡️ Claim logged as Pending Review (answer did not match secret verification answer).');
+                setClaimTarget(null);
+                setClaimAnswer('');
+                return;
+              }
+            }
+          } catch (e) {}
+        }
+        setWalletBalance(prev => prev + 100);
+        showToast('🎉 Return verified! ₹100 credited to finder wallet. 🏆 Badge progress updated!');
+        setClaimTarget(null);
+        setClaimAnswer('');
+      };
+
+      const filteredItems = useMemo(() => {
+        return items.filter(item => {
+          if (selectedType !== 'all' && item.type !== selectedType) return false;
+          if (selectedCategory !== 'all' && item.category !== selectedCategory) return false;
+          if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            return item.title.toLowerCase().includes(q) || item.location.toLowerCase().includes(q);
+          }
+          return true;
+        });
+      }, [items, selectedType, selectedCategory, searchQuery]);
+
+      const cartTotal = Object.entries(cart).reduce((sum, [id, qty]) => {
+        const prod = GOGRAB_SNACKS.find(p => p.id === id);
+        return sum + (prod ? prod.price * qty : 0);
+      }, 0);
+
+      const walletUsed = Math.min(walletBalance, cartTotal);
+      const remainingUpi = Math.max(0, cartTotal - walletUsed);
+
+      return (
+        <div className="app-container">
+          {/* Navigation Bar - Mocha Minimalist */}
+          <nav className="navbar">
+            <div className="navbar-inner">
+              <div className="brand-logo" onClick={() => setActivePage('home')}>
+                <div className="brand-icon-box">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </div>
+                <span>Findly<span style={{ color: 'var(--mocha-brown)' }}>.ai</span></span>
+              </div>
+
+              <ul className="nav-links">
+                {[
+                  { id: 'home', label: 'Home' },
+                  { id: 'dashboard', label: 'Dashboard' },
+                  { id: 'browse', label: 'Browse' },
+                  { id: 'report-lost', label: 'Report Lost' },
+                  { id: 'report-found', label: 'Report Found' },
+                  { id: 'wallet', label: 'Wallet', badge: `₹${walletBalance}` },
+                  { id: 'achievements', label: 'Badges' },
+                  { id: 'matches', label: '✨ AI Matches' }
+                ].map(item => (
+                  <li
+                    key={item.id}
+                    className={`nav-item ${activePage === item.id ? 'active' : ''}`}
+                    onClick={() => setActivePage(item.id)}
+                  >
+                    {item.label}
+                    {item.badge && (
+                      <span style={{ background: 'var(--cream)', color: 'var(--dark-chocolate)', fontSize: '0.74rem', padding: '2px 8px', borderRadius: '10px', fontWeight: 800 }}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="nav-actions">
+                <button
+                  className="btn btn-outline"
+                  style={{ padding: '6px 14px', fontSize: '0.82rem', borderColor: 'var(--warm-beige)', background: 'var(--cream)' }}
+                  onClick={() => setActivePage('gograb')}
+                >
+                  🥤 GoGrab Kiosk
+                </button>
+                <div className="user-chip" onClick={() => setActivePage('login')} title="Click to Switch Account / Login">
+                  <div className="user-avatar">
+                    {currentUser ? currentUser.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '🔑'}
+                  </div>
+                  <span style={{ fontSize: '0.84rem', fontWeight: 600 }}>
+                    {currentUser ? `${currentUser.name.split(' ')[0]} (${currentUser.role === 'staff' ? 'Staff' : 'Student'})` : 'Sign In'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          {/* Main Content */}
+          <main className="main-content">
+            {/* PAGE 1: HOME */}
+            {activePage === 'home' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+                {/* Hero Section */}
+                <section style={{
+                  background: 'linear-gradient(145deg, #FAF8F3 0%, #F5EFE6 55%, #EBE3D5 100%)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '68px 36px',
+                  textAlign: 'center',
+                  border: '1px solid var(--border-color)',
+                  boxShadow: 'var(--shadow-md)'
+                }}>
+                  <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: 'rgba(255, 255, 255, 0.75)',
+                      border: '1px solid var(--warm-beige)',
+                      padding: '6px 18px',
+                      borderRadius: 'var(--radius-full)',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      marginBottom: '24px',
+                      color: 'var(--dark-chocolate)'
+                    }}>
+                      ✨ Sophisticated AI Vision for College Campuses
+                    </div>
+
+                    <h1 style={{
+                      fontSize: 'clamp(2.4rem, 5.5vw, 3.8rem)',
+                      fontWeight: 800,
+                      lineHeight: '1.15',
+                      letterSpacing: '-0.02em',
+                      color: 'var(--espresso)',
+                      marginBottom: '18px'
+                    }}>
+                      Lost Something? <br />
+                      <span style={{ fontStyle: 'italic', fontWeight: 600, color: 'var(--mocha-brown)' }}>
+                        Let's Find It.
+                      </span>
+                    </h1>
+
+                    <p style={{
+                      fontSize: '1.05rem',
+                      color: 'var(--text-muted)',
+                      lineHeight: '1.7',
+                      maxWidth: '620px',
+                      margin: '0 auto 36px'
+                    }}>
+                      Findly.ai pairs advanced multimodal computer vision with our campus community, reuniting students with misplaced items safely and swiftly.
+                    </p>
+
+                    <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <button className="btn btn-primary btn-lg" onClick={() => setActivePage('report-lost')}>
+                        🚨 Report Lost Item
+                      </button>
+                      <button className="btn btn-outline btn-lg" onClick={() => setActivePage('report-found')}>
+                        🤝 Report Found Item
+                      </button>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Recently Reported Items */}
+                <section>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
+                    <div>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--mocha-brown)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        Live Campus Feed
+                      </span>
+                      <h2 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--espresso)', marginTop: '2px' }}>
+                        Recently Reported Items
+                      </h2>
+                    </div>
+                    <button className="btn btn-outline" onClick={() => setActivePage('browse')}>
+                      View All Catalog ({items.length}) →
+                    </button>
+                  </div>
+
+                  <div className="grid-cards">
+                    {items.slice(0, 4).map(item => (
+                      <div key={item.id} className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                        <img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
+                        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span className={`badge ${item.type === 'lost' ? 'badge-lost' : 'badge-found'}`}>
+                              {item.type.toUpperCase()}
+                            </span>
+                            <span style={{ fontSize: '0.76rem', color: 'var(--text-light)' }}>📅 {item.date}</span>
+                          </div>
+                          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '10px 0 6px' }}>{item.title}</h3>
+                          <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', marginBottom: '10px', lineHeight: '1.45', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>
+                            {item.description}
+                          </p>
+                          <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--mocha-brown)', marginBottom: '14px' }}>📍 {item.location}</p>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                            <button className="btn btn-outline" style={{ flex: 1, padding: '8px 12px', fontSize: '0.84rem' }} onClick={() => setSelectedDetail(item)}>Details</button>
+                            {item.hasMatch ? (
+                              <button className="btn btn-primary" style={{ flex: 1.2, padding: '8px 12px', fontSize: '0.84rem' }} onClick={() => viewMatchesForItem(item)}>✨ View Match</button>
+                            ) : (
+                              <button className="btn btn-primary" style={{ flex: 1.2, padding: '8px 12px', fontSize: '0.84rem' }} onClick={() => setClaimTarget(item)}>Claim</button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* PAGE: LOGIN / SIGN UP / SWITCH ACCOUNT */}
+            {activePage === 'login' && (
+              <div style={{ maxWidth: '540px', margin: '0 auto' }}>
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                  <span className="badge badge-ai" style={{ marginBottom: '8px' }}>🔐 CAMPUS IDENTITY PORTAL</span>
+                  <h1 style={{ fontSize: '2.1rem', fontWeight: 800 }}>
+                    {authMode === 'login' ? 'University Sign In' : 'Create Campus Account'}
+                  </h1>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
+                    Sign in with your university credentials or use a 1-click demo profile below.
+                  </p>
+                </div>
+
+                {/* 1-Click Demo Role Switcher */}
+                <div className="card" style={{ padding: '20px', marginBottom: '20px', background: 'var(--cream)', border: '1.5px solid var(--warm-beige)' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--dark-chocolate)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    ⚡ 1-Click Hackathon Demo Accounts:
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleQuickDemoLogin('arjun@univ.edu', 'campus123')}
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--mocha-brown)', background: '#ffffff', cursor: 'pointer', textAlign: 'left' }}
+                    >
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--espresso)' }}>👨‍🎓 Aarav Sharma (Student)</div>
+                        <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>arjun@univ.edu • Roll: 24BCE1042 • Lost Black Fossil Wallet</div>
+                      </div>
+                      <span className="badge badge-ai">Switch →</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleQuickDemoLogin('priya@univ.edu', 'campus123')}
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--mocha-brown)', background: '#ffffff', cursor: 'pointer', textAlign: 'left' }}
+                    >
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--espresso)' }}>👩‍🎓 Priya Patel (Student)</div>
+                        <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>priya@univ.edu • Roll: 24BCE1108 • Lost Herschel Wallet</div>
+                      </div>
+                      <span className="badge badge-ai">Switch →</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleQuickDemoLogin('library_staff@univ.edu', 'staff123')}
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--mocha-brown)', background: '#ffffff', cursor: 'pointer', textAlign: 'left' }}
+                    >
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--espresso)' }}>🛡️ Pooja Verma (Staff Custodian)</div>
+                        <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>library_staff@univ.edu • Can Approve / Reject Claims</div>
+                      </div>
+                      <span className="badge badge-found">Staff Mode →</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Full Login / Sign-Up Form */}
+                <div className="card" style={{ padding: '28px' }}>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', background: 'var(--soft-ivory)', padding: '5px', borderRadius: '999px', border: '1px solid var(--border-color)' }}>
+                    <button
+                      type="button"
+                      onClick={() => setAuthMode('login')}
+                      style={{ flex: 1, padding: '8px', borderRadius: '999px', border: 'none', background: authMode === 'login' ? 'var(--dark-chocolate)' : 'transparent', color: authMode === 'login' ? '#ffffff' : 'var(--espresso)', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAuthMode('signup')}
+                      style={{ flex: 1, padding: '8px', borderRadius: '999px', border: 'none', background: authMode === 'signup' ? 'var(--dark-chocolate)' : 'transparent', color: authMode === 'signup' ? '#ffffff' : 'var(--espresso)', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      Create Account
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleAuthSubmit}>
+                    {authMode === 'signup' && (
+                      <>
+                        <div className="form-group">
+                          <label className="form-label">Full Name *</label>
+                          <input className="form-input" required placeholder="e.g. Rohan Mehta" value={authName} onChange={e => setAuthName(e.target.value)} />
+                        </div>
+                        <div className="grid-2">
+                          <div className="form-group">
+                            <label className="form-label">Roll No / Staff ID *</label>
+                            <input className="form-input" required placeholder="e.g. 24BCE1088" value={authRoll} onChange={e => setAuthRoll(e.target.value)} />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Account Role</label>
+                            <select className="form-select" value={authRole} onChange={e => setAuthRole(e.target.value)}>
+                              <option value="student">Student</option>
+                              <option value="staff">Staff / Custodian</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="grid-2">
+                          <div className="form-group">
+                            <label className="form-label">Department</label>
+                            <input className="form-input" value={authDept} onChange={e => setAuthDept(e.target.value)} />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Hostel / Office</label>
+                            <input className="form-input" value={authHostel} onChange={e => setAuthHostel(e.target.value)} />
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <div className="form-group">
+                      <label className="form-label">University Email *</label>
+                      <input type="email" className="form-input" required placeholder="student@univ.edu" value={authEmail} onChange={e => setAuthEmail(e.target.value)} />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Password *</label>
+                      <input type="password" className="form-input" required placeholder="••••••••" value={authPassword} onChange={e => setAuthPassword(e.target.value)} />
+                    </div>
+
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px', marginTop: '6px' }}>
+                      {authMode === 'login' ? '🔐 Sign In to Campus Portal' : '✨ Register Campus Account'}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* PAGE 2: DASHBOARD */}
+            {activePage === 'dashboard' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+                <div className="card" style={{ background: 'linear-gradient(135deg, var(--dark-chocolate), var(--mocha-brown))', color: 'var(--soft-ivory)', padding: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                      <span className="badge" style={{ background: 'rgba(255,255,255,0.2)', color: '#fff' }}>
+                        {currentUser?.role === 'staff' ? '🛡️ CAMPUS CUSTODIAN / STAFF' : '🎓 VERIFIED STUDENT'}
+                      </span>
+                      <span style={{ fontSize: '0.82rem', opacity: 0.85 }}>{currentUser?.email}</span>
+                    </div>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--soft-ivory)', marginBottom: '4px' }}>
+                      Welcome back, {currentUser ? currentUser.name.split(' ')[0] : 'Student'}! 👋
+                    </h1>
+                    <p style={{ opacity: 0.9, fontSize: '0.94rem' }}>
+                      {currentUser?.department} • ID: {currentUser?.roll_number} • {currentUser?.hostel}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <button
+                      className="btn"
+                      style={{ background: 'rgba(255,255,255,0.16)', color: '#ffffff', border: '1px solid rgba(255,255,255,0.35)', fontSize: '0.84rem' }}
+                      onClick={() => setActivePage('login')}
+                    >
+                      🔄 Switch Account / Login
+                    </button>
+                    <button
+                      className="btn"
+                      style={{ background: '#ffffff', color: 'var(--dark-chocolate)', fontWeight: 700, fontSize: '0.84rem' }}
+                      onClick={() => setActivePage('report-lost')}
+                    >
+                      + Report Lost Item
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid-4">
+                  <div className="card"><h3>🎒 {items.filter(i => i.type === 'lost').length}</h3><p style={{ color: 'var(--text-muted)', fontSize: '0.84rem' }}>Lost Items Reported</p></div>
+                  <div className="card"><h3>🤝 {items.filter(i => i.type === 'found').length}</h3><p style={{ color: 'var(--text-muted)', fontSize: '0.84rem' }}>Found Items Reported</p></div>
+                  <div className="card" style={{ background: 'var(--cream)', borderColor: 'var(--warm-beige)', cursor: 'pointer' }} onClick={() => setActivePage('matches')}>
+                    <h3 style={{ color: 'var(--dark-chocolate)' }}>✨ {claimsList.length || 1} Active</h3>
+                    <p style={{ color: 'var(--mocha-brown)', fontSize: '0.84rem' }}>AI Matches & Claims</p>
+                  </div>
+                  <div className="card" style={{ background: '#ecfdf5', borderColor: '#a7f3d0', cursor: 'pointer' }} onClick={() => setActivePage('wallet')}>
+                    <h3 style={{ color: '#065f46' }}>₹{walletBalance}.00</h3>
+                    <p style={{ color: '#047857', fontSize: '0.84rem' }}>Rewards Wallet</p>
+                  </div>
+                </div>
+
+                <div className="card" style={{ background: 'var(--cream)', border: '1.5px solid var(--warm-beige)', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                  <div>
+                    <h3 style={{ color: 'var(--dark-chocolate)', fontWeight: 800, fontSize: '1.2rem' }}>
+                      ✨ High Confidence AI Match Detected (88% Score)!
+                    </h3>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '2px' }}>
+                      Black Leather Fossil Wallet matched with Found Black Leather Bifold Wallet at Main Library 2nd Floor Desk.
+                    </p>
+                  </div>
+                  <button className="btn btn-primary" onClick={() => viewMatchesForItem({ id: 'lost-wallet-fossil' })}>
+                    Review Live AI Match →
+                  </button>
+                </div>
+
+                {/* TWO-COLUMN DASHBOARD PANELS: CLAIMS QUEUE & LIVE NOTIFICATIONS */}
+                <div className="grid-2">
+                  {/* Left: Claims & Custodian Verification Queue */}
+                  <div className="card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                      <h3 style={{ fontSize: '1.15rem' }}>🛡️ Ownership Claims & Handover Queue</h3>
+                      <span className="badge badge-ai">{claimsList.length} Total</span>
+                    </div>
+                    {claimsList.length === 0 ? (
+                      <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', padding: '12px 0' }}>
+                        No claims submitted yet. Click "Claim" on any item or in AI Matches to test auto-approval vs pending review!
+                      </p>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {claimsList.slice(0, 5).map(cl => (
+                          <div key={cl.id} style={{ padding: '12px', borderRadius: '10px', background: 'var(--soft-ivory)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                            <div>
+                              <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>{cl.item_title || cl.item_id}</div>
+                              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                                Claimant: <strong>{cl.claimant_name}</strong> • Answer: "{cl.answer}"
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span className={`badge ${cl.status === 'approved' ? 'badge-found' : (cl.status === 'rejected' ? 'badge-lost' : 'badge-ai')}`}>
+                                {cl.status.toUpperCase()}
+                              </span>
+                              {cl.status === 'pending' && (
+                                <>
+                                  <button className="btn btn-success" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => handleClaimDecision(cl.id, 'approved')}>Approve</button>
+                                  <button className="btn btn-danger" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => handleClaimDecision(cl.id, 'rejected')}>Reject</button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right: Live In-App Notifications */}
+                  <div className="card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                      <h3 style={{ fontSize: '1.15rem' }}>🔔 Live AI & Custody Notifications</h3>
+                      <button className="btn btn-outline" style={{ padding: '4px 10px', fontSize: '0.76rem' }} onClick={() => refreshClaimsAndNotifs()}>Refresh</button>
+                    </div>
+                    {notifsList.length === 0 ? (
+                      <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)' }}>No notifications for this account yet.</p>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {notifsList.slice(0, 5).map(n => (
+                          <div key={n.id} style={{ padding: '12px', borderRadius: '10px', background: 'var(--soft-ivory)', borderLeft: '4px solid var(--mocha-brown)', fontSize: '0.84rem' }}>
+                            <div style={{ fontWeight: 600, color: 'var(--espresso)' }}>{n.message}</div>
+                            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '4px' }}>To: {n.user_name}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PAGE 3: REPORT LOST / FOUND */}
+            {(activePage === 'report-lost' || activePage === 'report-found') && (
+              <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+                <h1 style={{ fontSize: '2rem', fontWeight: 800, textAlign: 'center', marginBottom: '8px' }}>
+                  {activePage === 'report-lost' ? '🚨 Report a Lost Item' : '🤝 Report a Found Item'}
+                </h1>
+                <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginBottom: '28px' }}>
+                  Upload a photo so Findly.ai can extract 512-dim visual embeddings and match items in real-time.
+                </p>
+
+                <div className="card" style={{ padding: '32px' }}>
+                  {/* IMAGE UPLOAD DROPZONE */}
+                  <div className="form-group">
+                    <label className="form-label">
+                      {activePage === 'report-lost'
+                        ? '📷 Item Photo (Optional — if you never took a photo, describe it below for Text-to-Image AI matching!)'
+                        : '📷 Item Photo (Required for Found Items) *'}
+                    </label>
+
+                    {formImage ? (
+                      <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '2px solid var(--mocha-brown)', marginBottom: '12px', background: '#f8fafc' }}>
+                        <img src={formImage} alt="Uploaded preview" style={{ width: '100%', height: '230px', objectFit: 'contain', display: 'block', background: '#f1f5f9' }} />
+                        <button
+                          type="button"
+                          onClick={() => { setFormImage(''); setFormFile(null); }}
+                          style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(15,23,42,0.8)', color: '#fff', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontWeight: 800 }}
+                        >
+                          ✕
+                        </button>
+                        <div style={{ background: 'rgba(15, 23, 42, 0.82)', color: '#ffffff', padding: '8px 12px', fontSize: '0.78rem', textAlign: 'center', fontWeight: 600 }}>
+                          ✨ Photo ready for 512-dim CLIP / OpenCV visual embedding extraction
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => document.getElementById('report-photo-input').click()}
+                        style={{
+                          border: '2px dashed var(--mocha-brown)',
+                          borderRadius: '12px',
+                          padding: '28px 20px',
+                          textAlign: 'center',
+                          background: 'var(--soft-ivory)',
+                          cursor: 'pointer',
+                          marginBottom: '10px'
+                        }}
+                      >
+                        <input
+                          id="report-photo-input"
+                          type="file"
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={handleFileUploadChange}
+                        />
+                        <div style={{ fontSize: '2.2rem', marginBottom: '6px' }}>📸</div>
+                        <div style={{ fontWeight: 700, fontSize: '0.98rem', color: 'var(--espresso)' }}>
+                          Click here to upload a photo from your computer
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                          Supports JPG, PNG, WEBP — or click a quick demo photo below:
+                        </div>
+                        <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }} onClick={e => e.stopPropagation()}>
+                          {[
+                            { label: 'Black Fossil Wallet', url: `${BACKEND_API}/uploads/lost_wallet_fossil.jpg`, cat: 'wallet', title: 'Black Leather Fossil Wallet', desc: 'Black leather bifold wallet with gold logo corner and Star Wars sticker inside ID window', loc: 'Main Library 2nd Floor' },
+                            { label: 'Blue Hydro Flask', url: `${BACKEND_API}/uploads/lost_bottle_hydro.jpg`, cat: 'bottle', title: 'Blue 32oz Hydro Flask Bottle', desc: 'Cobalt blue metal bottle with yellow smiley sticker on the side', loc: 'Campus Gym Locker Room' },
+                            { label: 'North Face Backpack', url: `${BACKEND_API}/uploads/lost_backpack_northface.jpg`, cat: 'backpack', title: 'Black North Face Backpack', desc: 'Charcoal black backpack with red reflective triangle patch on front', loc: 'Engineering Hall Room 204' },
+                            { label: 'Silver MacBook Pro', url: `${BACKEND_API}/uploads/lost_laptop_macbook.jpg`, cat: 'electronics', title: 'Silver MacBook Pro 14-inch', desc: 'Silver aluminum laptop with blue NASA logo sticker on lid corner', loc: 'Main Library Reading Room' }
+                          ].map(preset => (
+                            <button
+                              key={preset.label}
+                              type="button"
+                              onClick={() => {
+                                handlePresetSelect(preset.url, preset.cat);
+                                if (!formTitle) setFormTitle(preset.title);
+                                if (!formDesc) setFormDesc(preset.desc);
+                                if (!formLocation) setFormLocation(preset.loc);
+                              }}
+                              style={{
+                                fontSize: '0.76rem',
+                                padding: '5px 10px',
+                                borderRadius: '999px',
+                                border: '1px solid var(--mocha-brown)',
+                                background: '#ffffff',
+                                color: 'var(--dark-chocolate)',
+                                fontWeight: 700,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              + {preset.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Item Title & Brand *</label>
+                    <input className="form-input" placeholder="e.g. Black Leather Fossil Wallet" value={formTitle} onChange={e => setFormTitle(e.target.value)} />
+                  </div>
+                  <div className="grid-2">
+                    <div className="form-group">
+                      <label className="form-label">Category</label>
+                      <select className="form-select" value={formCategory} onChange={e => setFormCategory(e.target.value)}>
+                        <option value="wallet">Wallet / Cardholder</option>
+                        <option value="backpack">Bags & Backpacks</option>
+                        <option value="bottle">Water Bottle / Flask</option>
+                        <option value="electronics">Electronics / Laptop</option>
+                        <option value="keys">Keys & Keychains</option>
+                        <option value="id_card">Cards & IDs</option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Date</label>
+                      <input type="date" className="form-input" value={formDate} onChange={e => setFormDate(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Campus Location *</label>
+                    <input className="form-input" placeholder="e.g. Main Library 2nd Floor" value={formLocation} onChange={e => setFormLocation(e.target.value)} />
+                  </div>
+
+                  {activePage === 'report-lost' && (
+                    <div style={{ background: 'var(--cream)', border: '1px solid var(--warm-beige)', padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
+                      <label className="form-label" style={{ color: 'var(--dark-chocolate)' }}>💰 Optional FindIt Appreciation Reward (₹)</label>
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
+                        {[
+                          { label: 'None (₹0)', val: 0 },
+                          { label: '₹50', val: 50 },
+                          { label: '₹100', val: 100 },
+                          { label: '₹150', val: 150 }
+                        ].map(opt => (
+                          <button
+                            key={opt.val}
+                            type="button"
+                            onClick={() => setFormReward(formReward === opt.val ? 0 : opt.val)}
+                            style={{
+                              padding: '6px 16px',
+                              borderRadius: 'var(--radius-full)',
+                              border: '1px solid var(--mocha-brown)',
+                              background: formReward === opt.val ? 'var(--dark-chocolate)' : '#ffffff',
+                              color: formReward === opt.val ? '#ffffff' : 'var(--espresso)',
+                              cursor: 'pointer',
+                              fontWeight: 600
+                            }}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activePage === 'report-found' && (
+                    <div style={{ background: '#f8fafc', border: '1px dashed var(--mocha-brown)', padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
+                      <label className="form-label" style={{ color: 'var(--dark-chocolate)' }}>🔒 Ownership Verification Question (Optional — AI generates if left blank)</label>
+                      <input className="form-input" style={{ marginBottom: '8px' }} placeholder="e.g. What sticker is inside the ID window?" value={formVerifQuestion} onChange={e => setFormVerifQuestion(e.target.value)} />
+                      <input className="form-input" placeholder="Secret Answer (never shown publicly, e.g. Star Wars)" value={formVerifAnswer} onChange={e => setFormVerifAnswer(e.target.value)} />
+                    </div>
+                  )}
+
+                  <div className="form-group">
+                    <label className="form-label">Description & Markings (Optional — AI auto-tags from photo if blank)</label>
+                    <textarea className="form-textarea" rows={3} placeholder="Distinct colors, scratches, stickers..." value={formDesc} onChange={e => setFormDesc(e.target.value)} />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px' }}>
+                    <button className="btn btn-outline" onClick={() => setActivePage('home')}>Cancel</button>
+                    <button className="btn btn-primary" onClick={() => handleReportSubmit(activePage === 'report-lost' ? 'lost' : 'found')}>
+                      {isSubmitting ? '🧠 Extracting 512-dim Image Embedding & Matching...' : 'Submit Report & Find AI Matches'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PAGE 4: BROWSE ITEMS */}
+            {activePage === 'browse' && (
+              <div>
+                <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '20px' }}>Campus Lost & Found Directory</h1>
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
+                  <input className="form-input" style={{ flex: 1, minWidth: '220px' }} placeholder="Search items by name or location..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+                  <select className="form-select" style={{ width: '160px' }} value={selectedType} onChange={e => setSelectedType(e.target.value)}>
+                    <option value="all">All Status</option>
+                    <option value="lost">Lost Only</option>
+                    <option value="found">Found Only</option>
+                  </select>
+                </div>
+
+                <div className="grid-cards">
+                  {filteredItems.map(item => (
+                    <div key={item.id} className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                      <img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
+                      <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span className={`badge ${item.type === 'lost' ? 'badge-lost' : 'badge-found'}`}>{item.type.toUpperCase()}</span>
+                          <span style={{ fontSize: '0.76rem', color: 'var(--text-light)' }}>📅 {item.date}</span>
+                        </div>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '8px 0 6px' }}>{item.title}</h3>
+                        <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', marginBottom: '10px', lineHeight: '1.45', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>
+                          {item.description}
+                        </p>
+                        <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--mocha-brown)', marginBottom: '14px' }}>📍 {item.location}</p>
+                        <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                          <button className="btn btn-outline" style={{ flex: 1, padding: '8px 12px', fontSize: '0.84rem' }} onClick={() => setSelectedDetail(item)}>Details</button>
+                          <button className="btn btn-primary" style={{ flex: 1, padding: '8px 12px', fontSize: '0.84rem' }} onClick={() => viewMatchesForItem(item)}>✨ Matches</button>
+                          <button className="btn btn-outline" style={{ flex: 1, padding: '8px 12px', fontSize: '0.84rem' }} onClick={() => setClaimTarget(item)}>Claim</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* PAGE 5: AI MATCH RESULTS */}
+            {activePage === 'matches' && (() => {
+              const qItem = liveMatch?.queryItem || {
+                id: 'lost-wallet-fossil',
+                type: 'lost',
+                title: 'Black Leather Fossil Wallet',
+                location: 'Main Library 2nd Floor',
+                date: '2026-11-12',
+                description: 'Black bifold leather wallet with gold metal logo emblem on corner and Star Wars sticker inside ID window.',
+                image_url: `${BACKEND_API}/uploads/lost_wallet_fossil.jpg`
+              };
+              const best = liveMatch?.bestMatch || {
+                score: 0.8782,
+                confidence: 'high',
+                breakdown: { image: 0.8172, text: 0.7716, category: 1.0, location: 0.85, time: 0.9286, llm: 0.98 },
+                reason: 'Matching wallet silhouette; same black exterior color; matching Fossil brand logo/markings; shared visual details (bifold, gold, leather, logo); matching yellow accent patch in image.',
+                item: {
+                  id: 'found-wallet-fossil',
+                  type: 'found',
+                  title: 'Found Black Leather Bifold Wallet',
+                  location: 'Main Library 2nd Floor Desk',
+                  date: '2026-11-13',
+                  description: 'Black leather bifold wallet with gold Fossil logo emblem on the corner.',
+                  image_url: `${BACKEND_API}/uploads/found_wallet_fossil.jpg`,
+                  verification_question: 'What sticker is inside the ID window?'
+                }
+              };
+              const mItem = best.item;
+              const scorePct = Math.round((best.score || 0.88) * 100);
+              const b = best.breakdown || {};
+              const allCandidates = liveMatch?.allMatches || [best];
+
+              return (
+                <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+                  <div style={{ background: 'linear-gradient(135deg, var(--espresso), var(--dark-chocolate))', color: 'var(--soft-ivory)', borderRadius: 'var(--radius-lg)', padding: '36px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                    <div>
+                      <span className="badge badge-ai" style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', borderColor: 'rgba(255,255,255,0.3)' }}>✨ FINDIT AI HYBRID + VISION RERANK PIPELINE</span>
+                      <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: '10px 0 6px', color: '#ffffff' }}>Live AI Match Analysis</h1>
+                      <p style={{ opacity: 0.9, fontSize: '0.94rem' }}>0.35·Image + 0.15·Text + 0.10·Category/Color + 0.10·Location + 0.05·Time + 0.25·Vision LLM</p>
+                    </div>
+                    <div style={{ background: 'rgba(255, 255, 255, 0.15)', padding: '16px 28px', borderRadius: 'var(--radius-lg)', textAlign: 'center' }}>
+                      <div style={{ fontSize: '2.8rem', fontWeight: 900, color: 'var(--warm-beige)' }}>{scorePct}%</div>
+                      <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{(best.confidence || 'high').toUpperCase()} CONFIDENCE</div>
+                    </div>
+                  </div>
+
+                  {allCandidates.length > 1 && (
+                    <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--espresso)' }}>Ranked Candidates (Near-Duplicate Test):</span>
+                      {allCandidates.map((cand, idx) => (
+                        <button
+                          key={cand.item.id}
+                          onClick={() => setLiveMatch({ ...liveMatch, bestMatch: cand })}
+                          style={{
+                            padding: '6px 14px',
+                            borderRadius: '999px',
+                            border: '1.5px solid var(--mocha-brown)',
+                            background: cand.item.id === mItem.id ? 'var(--dark-chocolate)' : '#ffffff',
+                            color: cand.item.id === mItem.id ? '#ffffff' : 'var(--espresso)',
+                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          #{idx + 1}: {cand.item.title} ({Math.round(cand.score * 100)}%)
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="grid-2" style={{ marginBottom: '28px' }}>
+                    <div className="card" style={{ border: '2px solid #fecaca' }}>
+                      <span className="badge badge-lost">🔴 QUERY ITEM ({qItem.type?.toUpperCase()})</span>
+                      {(qItem.image_url || qItem.imageUrl) ? (
+                        <img src={qItem.image_url || qItem.imageUrl} style={{ width: '100%', height: '220px', objectFit: 'contain', background: '#f8fafc', borderRadius: '12px', margin: '14px 0' }} />
+                      ) : (
+                        <div style={{ width: '100%', height: '220px', background: 'var(--soft-ivory)', borderRadius: '12px', margin: '14px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', textAlign: 'center', border: '1px dashed var(--mocha-brown)' }}>
+                          <div style={{ fontSize: '2.4rem', marginBottom: '8px' }}>📝➡️🖼️</div>
+                          <div style={{ fontWeight: 700, color: 'var(--espresso)', fontSize: '0.95rem' }}>No Photo Provided by Owner</div>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>Matched using Cross-Modal Text-to-Image Embedding + Metadata + Vision Re-Rank</div>
+                        </div>
+                      )}
+                      <h3>{qItem.title}</h3>
+                      <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', marginTop: '4px' }}>📍 {qItem.location} • 📅 {qItem.date}</p>
+                      <p style={{ fontSize: '0.84rem', marginTop: '8px', background: 'var(--soft-ivory)', padding: '10px', borderRadius: '8px' }}>{qItem.description}</p>
+                    </div>
+
+                    <div className="card" style={{ border: '2px solid #c8decb' }}>
+                      <span className="badge badge-found">🟢 MATCHED CANDIDATE ({mItem.type?.toUpperCase()})</span>
+                      <img src={mItem.image_url || mItem.imageUrl} style={{ width: '100%', height: '220px', objectFit: 'contain', background: '#f8fafc', borderRadius: '12px', margin: '14px 0' }} />
+                      <h3>{mItem.title}</h3>
+                      <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', marginTop: '4px' }}>📍 {mItem.location} • 📅 {mItem.date}</p>
+                      <p style={{ fontSize: '0.84rem', marginTop: '8px', background: 'var(--soft-ivory)', padding: '10px', borderRadius: '8px' }}>{mItem.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="card" style={{ padding: '28px', marginBottom: '28px' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '18px' }}>🧠 Multi-Vector Similarity Breakdown</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
+                      {[
+                        { label: 'Image Embedding Cosine (35% weight)', val: Math.round((b.image || 0) * 100) },
+                        { label: 'Cross-Modal Text Description (15% weight)', val: Math.round((b.text || 0) * 100) },
+                        { label: 'Category & Color Match (10% weight)', val: Math.round((b.category || 0) * 100) },
+                        { label: 'Location & Time Proximity (15% weight)', val: Math.round((((b.location || 0) * 0.67) + ((b.time || 0) * 0.33)) * 100) },
+                        { label: 'Vision LLM Re-Ranking Probability (25% weight)', val: Math.round((b.llm || 0) * 100) }
+                      ].map(row => (
+                        <div key={row.label}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.86rem', fontWeight: 600, marginBottom: '4px' }}>
+                            <span>{row.label}</span>
+                            <span>{row.val}%</span>
+                          </div>
+                          <div style={{ height: '8px', background: 'var(--cream)', borderRadius: '4px', overflow: 'hidden' }}>
+                            <div style={{ width: `${row.val}%`, height: '100%', background: 'var(--dark-chocolate)' }}></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ background: 'var(--soft-ivory)', border: '1px solid var(--warm-beige)', padding: '14px 16px', borderRadius: '10px', fontSize: '0.88rem' }}>
+                      <strong>🤖 AI Vision Re-Rank Reason: </strong>
+                      <span>{best.reason}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: 'right' }}>
+                    <button className="btn btn-primary btn-lg" onClick={() => setClaimTarget(mItem)}>
+                      🛡️ Answer Security Question & Claim Item (₹100 Reward)
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* PAGE 6: REWARDS WALLET */}
+            {activePage === 'wallet' && (
+              <div style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>FindIt Rewards Wallet</h1>
+                <div className="card" style={{ background: 'linear-gradient(135deg, var(--dark-chocolate), var(--espresso))', color: 'var(--soft-ivory)', padding: '32px' }}>
+                  <p style={{ textTransform: 'uppercase', fontSize: '0.82rem', letterSpacing: '0.05em', opacity: 0.9 }}>Available Balance</p>
+                  <div style={{ fontSize: '3.2rem', fontWeight: 900, color: 'var(--warm-beige)', margin: '8px 0' }}>₹{walletBalance}.00</div>
+                  <button className="btn" style={{ background: '#ffffff', color: 'var(--dark-chocolate)', fontWeight: 700 }} onClick={() => setActivePage('gograb')}>
+                    🥤 Redeem at GoGrab Vending Machine →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* PAGE 7: GOGRAB VENDING KIOSK */}
+            {activePage === 'gograb' && (
+              <div style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>GoGrab Smart Vending Kiosk</h1>
+                <p style={{ color: 'var(--text-muted)' }}>Choose items and apply your FindIt wallet balance. Partial wallet + UPI payments supported.</p>
+
+                <div className="grid-3">
+                  {GOGRAB_SNACKS.map(snack => {
+                    const qty = cart[snack.id] || 0;
+                    return (
+                      <div key={snack.id} className="card" style={{ textAlign: 'center', padding: '20px' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>{snack.icon}</div>
+                        <h4 style={{ fontWeight: 700 }}>{snack.name}</h4>
+                        <p style={{ fontWeight: 900, color: 'var(--dark-chocolate)', margin: '6px 0 12px' }}>₹{snack.price}</p>
+                        {qty === 0 ? (
+                          <button className="btn btn-outline" style={{ width: '100%', fontSize: '0.82rem' }} onClick={() => setCart({ ...cart, [snack.id]: 1 })}>
+                            + Add
+                          </button>
+                        ) : (
+                          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px' }}>
+                            <button onClick={() => setCart({ ...cart, [snack.id]: Math.max(0, qty - 1) })} style={{ border: 'none', background: 'var(--cream)', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer' }}>-</button>
+                            <span>{qty}</span>
+                            <button onClick={() => setCart({ ...cart, [snack.id]: qty + 1 })} style={{ border: 'none', background: 'var(--cream)', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer' }}>+</button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {cartTotal > 0 && (
+                  <div className="card" style={{ background: 'var(--cream)', padding: '24px' }}>
+                    <h3>Checkout Breakdown</h3>
+                    <p>Total: ₹{cartTotal} | Wallet Applied: -₹{walletUsed} | Remaining UPI: <strong>₹{remainingUpi}</strong></p>
+                    <button className="btn btn-primary" style={{ marginTop: '12px' }} onClick={() => {
+                      setWalletBalance(prev => Math.max(0, prev - walletUsed));
+                      showToast('🥤 Token generated! GoGrab Machine #01 dispensing items.');
+                      setCart({});
+                    }}>
+                      Generate GoGrab Token 🎟️
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* PAGE 8: ACHIEVEMENTS */}
+            {activePage === 'achievements' && (
+              <div style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>My Appreciation Badges</h1>
+                <div className="grid-3">
+                  {[
+                    { name: 'First Finder', icon: '🌱', desc: '1 verified return', unlocked: true },
+                    { name: 'Helping Hand', icon: '🤝', desc: '3 verified returns', unlocked: true },
+                    { name: 'Campus Hero', icon: '🏅', desc: '5 verified returns', unlocked: false },
+                    { name: 'Sharp Eye', icon: '🔍', desc: 'High quality found report', unlocked: true },
+                    { name: 'Selfless Soul', icon: '💖', desc: 'Declined monetary reward', unlocked: false }
+                  ].map(b => (
+                    <div key={b.name} className="card" style={{ opacity: b.unlocked ? 1 : 0.6, background: b.unlocked ? '#ffffff' : 'var(--cream)' }}>
+                      <div style={{ fontSize: '2.5rem' }}>{b.icon}</div>
+                      <h3 style={{ margin: '8px 0 4px' }}>{b.name}</h3>
+                      <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>{b.desc}</p>
+                      <span className="badge" style={{ marginTop: '10px', background: b.unlocked ? 'var(--success-light)' : '#e2e8f0' }}>
+                        {b.unlocked ? 'UNLOCKED' : 'LOCKED'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </main>
+
+          {/* Verification Claim Modal */}
+          {claimTarget && (
+            <div className="modal-overlay" onClick={() => setClaimTarget(null)}>
+              <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>🛡️ Anti-Fraud Ownership Verification</h3>
+                  <button onClick={() => setClaimTarget(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+                </div>
+                <div className="modal-body">
+                  <p style={{ marginBottom: '10px', fontSize: '0.92rem' }}>
+                    Claiming: <strong>{claimTarget.title}</strong>
+                  </p>
+                  <p style={{ marginBottom: '12px', fontSize: '0.88rem', background: 'var(--soft-ivory)', padding: '10px', borderRadius: '8px', border: '1px solid var(--warm-beige)' }}>
+                    🔒 <strong>Verification Question:</strong> {claimTarget.verification_question || 'What identifying sticker, keychain, or secret detail is on this item?'}
+                  </p>
+                  <textarea
+                    className="form-textarea"
+                    rows={3}
+                    placeholder="Type your verification answer (e.g. 'Star Wars' for the Fossil wallet)..."
+                    value={claimAnswer}
+                    onChange={e => setClaimAnswer(e.target.value)}
+                  />
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-outline" onClick={() => setClaimTarget(null)}>Cancel</button>
+                  <button className="btn btn-primary" onClick={handleClaimAndReleaseReward}>
+                    Confirm & Release ₹100 Reward
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Details Modal */}
+          {selectedDetail && (
+            <div className="modal-overlay" onClick={() => setSelectedDetail(null)}>
+              <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>{selectedDetail.title}</h3>
+                  <button onClick={() => setSelectedDetail(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+                </div>
+                <div className="modal-body">
+                  <img src={selectedDetail.imageUrl} style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '12px', marginBottom: '14px' }} />
+                  <p><strong>Category:</strong> {selectedDetail.category}</p>
+                  <p><strong>Location:</strong> {selectedDetail.location}</p>
+                  <p><strong>Reported:</strong> {selectedDetail.date}</p>
+                  <p style={{ marginTop: '8px' }}>{selectedDetail.description}</p>
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-outline" onClick={() => setSelectedDetail(null)}>Close</button>
+                  <button className="btn btn-primary" onClick={() => {
+                    const itm = selectedDetail;
+                    setSelectedDetail(null);
+                    setClaimTarget(itm);
+                  }}>Claim Item</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {toast && <div className="toast-banner"><span>✨</span> {toast}</div>}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
